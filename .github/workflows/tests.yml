@@ -19,4 +19,4 @@ jobs:
         run: poetry install
       - name: Run test without Postgres Dependency
         working-directory: qsa-api
-        run: pytest -sv tests/test_api_storage_filesystem.py
+        run: pytest -sv tests/test_api_storage_postgresql.py
