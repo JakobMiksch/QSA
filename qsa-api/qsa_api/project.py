@@ -352,6 +352,7 @@ class QSAProject:
         if t == Qgis.LayerType.Vector:
             self.debug("Init vector layer")
             lyr = QgsVectorLayer(datasource, name, provider)
+            self.debug(lyr)
         elif t == Qgis.LayerType.Raster:
             self.debug("Init raster layer")
             lyr = QgsRasterLayer(datasource, name, provider)
@@ -395,6 +396,14 @@ class QSAProject:
         project = QgsProject()
         project.read(self._qgis_project_uri, Qgis.ProjectReadFlag.DontResolveLayers)
         project.addMapLayer(lyr)
+
+        if t == Qgis.LayerType.Vector:
+            layer_id = lyr.id()
+            self.debug("layer_id")
+            self.debug(layer_id)
+            project.writeEntry( "WFSLayers", "/", [layer_id])
+            geometry_precision = 8
+            project.writeEntry( "WFSLayersPrecision", "/" + layer_id, geometry_precision) 
 
         self.debug("Write QGIS project")
         project.write()
