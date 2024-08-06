@@ -397,14 +397,18 @@ class QSAProject:
         project.read(self._qgis_project_uri, Qgis.ProjectReadFlag.DontResolveLayers)
         project.addMapLayer(lyr)
 
-        if t == Qgis.LayerType.Vector:
-            layer_id = lyr.id()
-            self.debug("layer_id")
-            self.debug(layer_id)
-            project.writeEntry( "WFSLayers", "/", [layer_id])
+        def set_published_wfs_layers(qgis_project_instance, layer_ids):
+            qgis_project_instance.writeEntry( "WFSLayers" , "/", layer_ids)
             geometry_precision = 8
-            project.writeEntry( "WFSLayersPrecision", "/" + layer_id, geometry_precision) 
+            for layer_id in layer_ids:
+                qgis_project_instance.writeEntry( "WFSLayersPrecision", "/" + layer_id, geometry_precision) 
+            qgis_project_instance.write()
 
+        # ensure all vector layers are published by default
+        if t == Qgis.LayerType.Vector:
+            vector_layer_ids = [layer.id() for layer in project.mapLayers().values() if isinstance(layer, QgsVectorLayer)]
+            set_published_wfs_layers(project, vector_layer_ids)
+        
         self.debug("Write QGIS project")
         project.write()
 
