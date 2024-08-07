@@ -15,7 +15,7 @@ services:
       - QSA_HOST="qsa"
       - QSA_PORT=9999
   qsa:
-    image: pblottiere/qsa
+    image: ghcr.io/pblottiere/qsa
     build:
       context: ..
       dockerfile: Dockerfile
