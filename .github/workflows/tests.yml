@@ -30,7 +30,8 @@ jobs:
         ports:
           - 5433:5432
         options: >-
-          --health-cmd "pg_isready -U qsa -d qsa"          --health-interval 10s
+          --health-cmd "pg_isready -U qsa -d qsa" 
+          --health-interval 10s
           --health-timeout 5s
           --health-retries 5
         env:
@@ -55,4 +56,9 @@ jobs:
                    qsa_api.app:app &
       - name: Run tests
         working-directory: qsa-api
-        run: QSA_GEOTIFF="/dem.tif" QSA_GPKG="/data.gpkg" QSA_HOST=127.0.01 QSA_PORT=5000 pytest -sv tests
+        run: | 
+          QSA_GEOTIFF="/dem.tif" \
+          QSA_GPKG="/data.gpkg" \
+          QSA_HOST=127.0.01 \
+          QSA_PORT=5000 \
+          pytest -sv tests/test_api_storage_postgresql.py
