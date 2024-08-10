@@ -10,6 +10,35 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: qgis/qgis:3.34
+    services:
+      qgisserver:
+        image: qgis/qgis-server:3.38
+        env:
+          QGIS_USER: 1000
+          QGIS_SERVER_LOG_LEVEL: 0
+          QGIS_SERVER_PROJECT_CACHE_STRATEGY: periodic
+          QSA_HOST: qsa
+          QSA_PORT: 9999  
+        volumes:
+          - ./sandbox/dem.tif:/dem.tif
+          - ./sandbox/data.gpkg:/data.gpkg
+          - ./sandbox/projects/qsa:/io/data
+          - ./qsa-plugin:/io/plugins/qsa
+          - ./sandbox/pg_service.conf:/etc/postgresql-common/pg_service.conf
+      postgres:
+        image:  postgis/postgis:15-3.4-alpine
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        env:
+          POSTGRES_PASSWORD: qsa
+          POSTGRES_USER: qsa
+          POSTGRES_DB: qsa
+
     steps:
       - uses: actions/checkout@v4
       - name: install system dependencies 
@@ -17,6 +46,15 @@ jobs:
       - name: Install Python dependencies
         working-directory: qsa-api
         run: poetry install
+      # TODO: check if Postgres is ready
+      - name: Run QSA Server
+        working-directory: qsa-api
+        run: |
+          gunicorn --bind 0.0.0.0:5000 \
+                   --reload \
+                   --workers 1 \
+                   --threads 1 \
+                   qsa_api.app:app &
       - name: Run test without Postgres Dependency
         working-directory: qsa-api
         run: pytest -sv tests/test_api_storage_filesystem.py
