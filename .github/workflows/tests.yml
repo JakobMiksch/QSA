@@ -46,7 +46,6 @@ jobs:
       - name: Install Python dependencies
         working-directory: qsa-api
         run: poetry install
-      # TODO: check if Postgres is ready
       - name: Run QSA Server
         working-directory: qsa-api
         run: |
@@ -55,8 +54,5 @@ jobs:
                    --workers 1 \
                    --threads 1 \
                    qsa_api.app:app &
-      # - name: Run test without Postgres Dependency
-      #   working-directory: qsa-api
-      #   run: pytest -sv tests/test_api_storage_filesystem.py
       - name: Run tests
         run: QSA_GEOTIFF="/dem.tif" QSA_GPKG="/data.gpkg" QSA_HOST=127.0.01 QSA_PORT=5000 pytest -sv tests
