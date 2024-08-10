@@ -55,4 +55,5 @@ jobs:
                    --threads 1 \
                    qsa_api.app:app &
       - name: Run tests
+        working-directory: qsa-api
         run: QSA_GEOTIFF="/dem.tif" QSA_GPKG="/data.gpkg" QSA_HOST=127.0.01 QSA_PORT=5000 pytest -sv tests
