@@ -14,6 +14,8 @@ from qsa_api.api.symbology import symbology
 app.register_blueprint(projects, url_prefix="/api/projects")
 app.register_blueprint(symbology, url_prefix="/api/symbology")
 
+TEST_PROJECT_0 = "qsa_test_project0"
+TEST_PROJECT_1 = "qsa_test_project1"
 
 class TestResponse:
     def __init__(self, resp, flask_client):
